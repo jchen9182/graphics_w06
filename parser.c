@@ -152,24 +152,18 @@ void parse_file(char * filename,
             add_circle(edges, cx, cy, cz, r, step);
         }
 
-        else if (!strcmp(lines[i], "hermite")) {
-            char * args = lines[++i];
-            double x0, y0, x1, y1, rx0, ry0, rx1, ry1;
-
-            sscanf(args, "%le %le %le %le %le %le %le %le",
-                          &x0, &y0, &x1, &y1, &rx0, &ry0, &rx1, &ry1);
-
-            add_curve(edges, x0, y0, x1, y1, rx0, ry0, rx1, ry1, step, 0);
-        }
-
-        else if (!strcmp(lines[i], "bezier")) {
+        else if (!strcmp(lines[i], "hermite") || !strcmp(lines[i], "bezier")) {
             char * args = lines[++i];
             double x0, y0, x1, y1, x2, y2, x3, y3;
+            int type;
+
+            if (!strcmp(lines[i - 1], "hermite")) type = 0;
+            else type = 1;
 
             sscanf(args, "%le %le %le %le %le %le %le %le",
                           &x0, &y0, &x1, &y1, &x2, &y2, &x3, &y3);
 
-            add_curve(edges, x0, y0, x1, y1, x2, y2, x3, y3, step, 1);
+            add_curve(edges, x0, y0, x1, y1, x2, y2, x3, y3, step, type);
         }
 
         else if (!strcmp(lines[i], "display")) {
