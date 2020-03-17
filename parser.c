@@ -72,7 +72,8 @@ void parse_file(char * filename,
     int SIZE = 100;
     color c;
     change_color(&c, 0, 0 , 0);
-    double step = .001;
+    double line_step = .001;
+    double sphere_step = 10;
 
     if (strcmp(filename, "stdin") == 0) f = stdin;
     else f = fopen(filename, "r");
@@ -87,7 +88,7 @@ void parse_file(char * filename,
         strcpy(lines[counter++], "\0");
     }
 
-    for (int i = 0; i < 38; i++) {
+    for (int i = 0; i < SIZE; i++) {
         if (!strcmp(lines[i], "quit")) break;
         if (!strcmp(lines[i], "\0") && !strcmp(lines[i + 1], "\0")) break;
 
@@ -149,7 +150,7 @@ void parse_file(char * filename,
 
             sscanf(args, "%le %le %le %le", &cx, &cy, &cz, &r);
 
-            add_circle(edges, cx, cy, cz, r, step);
+            add_circle(edges, cx, cy, cz, r, line_step);
         }
 
         else if (!strcmp(lines[i], "hermite") || !strcmp(lines[i], "bezier")) {
@@ -163,7 +164,39 @@ void parse_file(char * filename,
             sscanf(args, "%le %le %le %le %le %le %le %le",
                           &x0, &y0, &x1, &y1, &x2, &y2, &x3, &y3);
 
-            add_curve(edges, x0, y0, x1, y1, x2, y2, x3, y3, step, type);
+            add_curve(edges, x0, y0, x1, y1, x2, y2, x3, y3, line_step, type);
+        }
+
+        else if (!strcmp(lines[i], "sphere")) {
+            char * args = lines[++i];
+            double cx, cy, cz, r;
+
+            sscanf(args, "%le %le %le %le", &cx, &cy, &cz, &r);
+
+            add_sphere(edges, cx, cy, cz, r, sphere_step);
+        }
+
+        else if (!strcmp(lines[i], "torus")) {
+            char * args = lines[++i];
+            double cx, cy, cz, r1, r2;
+
+            sscanf(args, "%le %le %le %le %le", &cx, &cy, &cz, &r1, &r2);
+
+            add_torus(edges, cx, cy, cz, r1, r2, sphere_step);
+        }
+
+        else if (!strcmp(lines[i], "box")) {
+            char * args = lines[++i];
+            double x, y, z, width, height, depth;
+
+            sscanf(args, "%le %le %le %le %le %le",
+                          &x, &y, &z, &width, &height, &depth);
+
+            add_box(edges, x, y, z, width, height, depth);
+        }
+
+        else if (!strcmp(lines[i], "clear")) {
+            edges -> lastcol = 0;
         }
 
         else if (!strcmp(lines[i], "display")) {

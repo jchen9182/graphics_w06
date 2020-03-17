@@ -22,6 +22,23 @@
 void add_box( struct matrix * edges,
               double x, double y, double z,
               double width, double height, double depth ) {
+    // Left Face
+    add_edge(edges, x, y, z, x, y - height, z);
+    add_edge(edges, x, y - height, z, x, y - height, z - depth);
+    add_edge(edges, x, y - height, z - depth, x, y, z - depth);
+    add_edge(edges, x, y, z - depth, x, y, z);
+
+    // Right Face
+    add_edge(edges, x + width, y, z, x + width, y - height, z);
+    add_edge(edges, x + width, y - height, z, x + width, y - height, z - depth);
+    add_edge(edges, x + width, y - height, z - depth, x + width, y, z - depth);
+    add_edge(edges, x + width, y, z - depth, x + width, y, z);
+
+    // Connecting Edges
+    add_edge(edges, x, y, z, x + width, y, z);
+    add_edge(edges, x, y - height, z, x + width, y - height, z);
+    add_edge(edges, x, y - height, z - depth, x + width, y - height, z - depth);
+    add_edge(edges, x, y, z - depth, x + width, y, z - depth);
 }
 
 /*======== void add_sphere() ==========
@@ -40,7 +57,17 @@ void add_box( struct matrix * edges,
 void add_sphere( struct matrix * edges,
                  double cx, double cy, double cz,
                  double r, int step ) {
-  return;
+    struct matrix * sphere = generate_sphere(cx, cy, cz, r, step);
+    double ** matrix = sphere -> m;
+    int cols = sphere -> cols;
+
+    for (int col = 0; col < cols - 1; col++) {
+        double x = matrix[0][col];
+        double y = matrix[1][col];
+        double z = matrix[2][col];
+        
+        add_edge(edges, x, y, z, x, y, z);
+    }
 }
 
 /*======== void generate_sphere() ==========
@@ -57,7 +84,25 @@ void add_sphere( struct matrix * edges,
   ====================*/
 struct matrix * generate_sphere(double cx, double cy, double cz,
                                 double r, int step ) {
-  return NULL;
+    struct matrix * points = new_matrix(4, 100);
+    double phi = 0;
+    double theta = 0;
+
+    for (int p = 0; p < 1000; p += step) {
+        phi = (2 * M_PI) * p / 1000;
+
+        for (int t = 0; t < 1000; t += step) {
+            theta = M_PI * t / 1000;
+
+            double x = r * cos(theta) + cx;
+            double y = r * sin(theta) * cos(phi) + cy;
+            double z = r * sin(theta) * sin(phi) + cz;
+
+            add_point(points, x, y, z);
+        }
+    }
+
+    return points;
 }
 
 /*======== void add_torus() ==========
@@ -76,7 +121,17 @@ struct matrix * generate_sphere(double cx, double cy, double cz,
 void add_torus( struct matrix * edges,
                 double cx, double cy, double cz,
                 double r1, double r2, int step ) {
-  return;
+    struct matrix * torus = generate_torus(cx, cy, cz, r1, r2, step);
+    double ** matrix = torus -> m;
+    int cols = torus -> cols;
+
+    for (int col = 0; col < cols - 1; col++) {
+        double x = matrix[0][col];
+        double y = matrix[1][col];
+        double z = matrix[2][col];
+        
+        add_edge(edges, x, y, z, x, y, z);
+    }
 }
 
 /*======== void generate_torus() ==========
@@ -94,7 +149,25 @@ void add_torus( struct matrix * edges,
   ====================*/
 struct matrix * generate_torus( double cx, double cy, double cz,
                                 double r1, double r2, int step ) {
-  return NULL;
+    struct matrix * points = new_matrix(4, 100);
+    double phi = 0;
+    double theta = 0;
+
+    for (int p = 0; p < 1000; p += step) {
+        phi = (2 * M_PI) * p / 1000;
+
+        for (int t = 0; t < 1000; t += step) {
+            theta = (2 * M_PI) * t / 1000;
+
+            double x = cos(phi) * (r1 * cos(theta) + r2) + cx;
+            double y = r1 * sin(theta) + cy;
+            double z = -1 * sin(phi) * (r1 * cos(theta) + r2) + cz;
+
+            add_point(points, x, y, z);
+        }
+    }
+
+    return points;
 }
 
 /*======== void add_circle() ==========
@@ -119,7 +192,7 @@ void add_circle( struct matrix *edges,
         add_edge(edges, x0, y0, 0, x1, y1, 0);
         x0 = x1;
         y0 = y1;
-        angle += (2 * M_PI) / (1 / step);
+        angle += (2 * M_PI) * step;
     }
 }
 
