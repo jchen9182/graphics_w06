@@ -66,7 +66,7 @@ void add_sphere( struct matrix * edges,
         double y = matrix[1][col];
         double z = matrix[2][col];
         
-        add_edge(edges, x, y, z, x, y, z);
+        add_edge(edges, x, y, z, x + 1, y + 1, z + 1);
     }
 }
 

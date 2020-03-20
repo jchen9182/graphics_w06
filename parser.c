@@ -69,9 +69,9 @@ void parse_file(char * filename,
     FILE *f;
     char line[256];
     clear_screen(s);
-    int SIZE = 100;
+    int SIZE = 500;
     color c;
-    change_color(&c, 0, 0 , 0);
+    change_color(&c, 249, 179, 164);
     double line_step = .001;
     double sphere_step = 10;
 
@@ -211,6 +211,16 @@ void parse_file(char * filename,
             char * arg = lines[++i];
             save_extension(s, arg);
             printf("Saved as %s\n", arg);
+        }
+
+        else if (!strcmp(lines[i], "color")) {
+            char * args = lines[++i];
+            int r, g, b;
+
+            sscanf(args, "%d %d %d",
+                   &r, &g, &b);
+
+            change_color(&c, r, g, b);
         }
     }
 }
